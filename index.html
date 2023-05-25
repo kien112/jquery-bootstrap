@@ -43,9 +43,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type = "text/javascript" 
-         src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js">
-      </script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js">
+    </script>
     <script type="text/javascript">
         var haveOne = false;
         var firstVal = -1;
@@ -62,21 +61,21 @@
                 startGame();
                 timeCounter = 0;
             });
-            
+
             $("#btnReset").click(function () {
                 startGame();
                 timeCounter = 0;
             });
         });
-        
-        
+
+
 
         function countTime() {
             timeCounter++;
-            $("#time").text("Time: " + (timeCounter/1000) + "s"); 
+            $("#time").text("Time: " + (timeCounter / 1000) + "s");
         }
 
-        function createBoxContent(){
+        function createBoxContent() {
             $('.body').empty();
             let arr = [];
             let x = 0;
@@ -97,11 +96,12 @@
             var countWin = 0;
             var interval = setInterval(countTime, 1);
             createBoxContent();
-
+            var reset = -1;
+            var sid;
             $(".box").click(function () {
                 if (haveOne == false) {
                     firstVal = Number($(this).text());
-                    if(firstVal == 0) {
+                    if (firstVal == 0) {
                         return;
                     }
                     $(this).css("background-color", "yellow");
@@ -113,31 +113,44 @@
                     haveOne = !haveOne;
                     var secondVal = Number($(this).text());
                     var id2 = $(this).attr("id");
-                    if(id === id2){
+                    if (id === id2) {
                         $("#" + id).css("background-color", "White");
                         return;
                     }
                     else if (firstVal === secondVal && id !== id2) {
-                        $("#"+id+",#"+id2).css("background-color", "white");
-                        $("#"+id+",#"+id2).empty();
+                        $("#" + id + ",#" + id2).css("background-color", "white");
+                        $("#" + id + ",#" + id2).empty();
                         countWin++;
-                        if (countWin === 8){
+                        if (countWin === 8) {
                             clearInterval(interval);
                             showWin();
                         }
-                    } 
-                    else {
-                        $("#"+id+",#"+id2).effect( "shake", {times:3}, 500 );
-                        $("#"+id+",#"+id2).css("background-color", "white");
                     }
+                    else {
+                        $("#" + id + ",#" + id2).addClass("shakingg");
+                        removeClassShaking("#" + id + ",#" + id2);
+                        $("#" + id + ",#" + id2).css("background-color", "white");
+                        haveOne = false;
+                    }
+
                 }
             });
 
         }
 
-        function showWin(){
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function removeClassShaking(bothId) {
+            await sleep(2000);
+            $(bothId).removeClass("shakingg");
+        }
+
+
+        function showWin() {
             timeArr[size++] = timeCounter;
-            $("#lowestTime").text("Lowest Time: " + Math.min(...timeArr)/1000 + "s");
+            $("#lowestTime").text("Lowest Time: " + Math.min(...timeArr) / 1000 + "s");
             Swal.fire(
                 'Good job!',
                 'You won!',
@@ -147,10 +160,8 @@
 
         function getRandomItem(arr) {
 
-            // get random index value
             const randomIndex = Math.floor(Math.random() * arr.length);
 
-            // get random item
             const item = arr[randomIndex];
             var index = arr.indexOf(item);
             arr.splice(index, 1);
