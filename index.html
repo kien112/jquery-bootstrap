@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Responsive Navigation Bar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <!--Navigation bar start-->
+    <div class="nav">
+        <div class="mobile-menu-bar">
+            <p>Menu</p>
+            <i class="fa fa-bars btn"></i>
+        </div>
+        <div class="menu">
+            <a href="index.html">Home</a>
+            <a href="drapdrop.html">About</a>
+            <a href="#">Info</a>
+            <a href="#">Contact</a>
+            <a href="#">More</a>
+        </div>
+    </div>
+    <!--Navigation bar end-->
+    <button id="btnReset" class="btn btn-primary m-5">Reset</button>
+    <button id="btnStart" class="btn btn-primary m-5">Start</button>
+    <div>
+        <h3 id="time">Time: 0.0s</h3>
+        <h3 style="position: absolute; left: 300px; top: 200px;" id="lowestTime">Lowest Time: </h3>
+    </div>
+
+
+    <div class="body row" style="height: 400px; width: 500px; margin-left:30px">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type = "text/javascript" 
+         src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js">
+      </script>
+    <script type="text/javascript">
+        var haveOne = false;
+        var firstVal = -1;
+        var id = -1, size = 0;
+        let timeArr = [];
+        let timeCounter = 0;
+
+        $(document).ready(function () {
+            $('.btn').click(function () {
+                $('.menu').toggleClass('active');
+            });
+
+            $("#btnStart").click(function () {
+                startGame();
+                timeCounter = 0;
+            });
+            
+            $("#btnReset").click(function () {
+                startGame();
+                timeCounter = 0;
+            });
+        });
+        
+        
+
+        function countTime() {
+            timeCounter++;
+            $("#time").text("Time: " + (timeCounter/1000) + "s"); 
+        }
+
+        function createBoxContent(){
+            $('.body').empty();
+            let arr = [];
+            let x = 0;
+            for (let i = 1; i <= 8; i++) {
+                arr[x++] = i;
+                arr[x++] = i;
+            }
+
+            for (let i = 0; i < 16; i++) {
+                var val = getRandomItem(arr);
+                var text = "<div id='" + i
+                    + "' class='col-md-3 h-25 text-center pt-4 border border-secondary box'>" + val + "</div>";
+                $('.body').append(text);
+            }
+        }
+
+        function startGame() {
+            var countWin = 0;
+            var interval = setInterval(countTime, 1);
+            createBoxContent();
+
+            $(".box").click(function () {
+                if (haveOne == false) {
+                    firstVal = Number($(this).text());
+                    if(firstVal == 0) {
+                        return;
+                    }
+                    $(this).css("background-color", "yellow");
+                    haveOne = !haveOne;
+                    id = $(this).attr("id");
+                }
+                else {
+                    $(this).css("background-color", "yellow");
+                    haveOne = !haveOne;
+                    var secondVal = Number($(this).text());
+                    var id2 = $(this).attr("id");
+                    if(id === id2){
+                        $("#" + id).css("background-color", "White");
+                        return;
+                    }
+                    else if (firstVal === secondVal && id !== id2) {
+                        $("#"+id+",#"+id2).css("background-color", "white");
+                        $("#"+id+",#"+id2).empty();
+                        countWin++;
+                        if (countWin === 8){
+                            clearInterval(interval);
+                            showWin();
+                        }
+                    } 
+                    else {
+                        $("#"+id+",#"+id2).effect( "shake", {times:3}, 500 );
+                        $("#"+id+",#"+id2).css("background-color", "white");
+                    }
+                }
+            });
+
+        }
+
+        function showWin(){
+            timeArr[size++] = timeCounter;
+            $("#lowestTime").text("Lowest Time: " + Math.min(...timeArr)/1000 + "s");
+            Swal.fire(
+                'Good job!',
+                'You won!',
+                'success'
+            );
+        }
+
+        function getRandomItem(arr) {
+
+            // get random index value
+            const randomIndex = Math.floor(Math.random() * arr.length);
+
+            // get random item
+            const item = arr[randomIndex];
+            var index = arr.indexOf(item);
+            arr.splice(index, 1);
+
+            return item;
+
+        }
+    </script>
+
+</body>
+
+</html>
