@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <button id="btnStart" class="btn btn-primary m-5">Start</button>
+    <div>
+        <h3 id="time">Time: 0.0s</h3>
+    </div>
+    <div class="body row" style="height: 400px; width: 500px; margin-left:30px">
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js">
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#btnStart").click(() => {
+                createBoxContent();
+            })
+        })
+        let time = 0;
+        var interval;
+        var firstVal = -1;
+        
+        function countTime() {
+            time++;
+            $("#time").text("Time: " + (time / 1000) + "s");
+            if (time === 1000) {
+                clearInterval(interval);
+                $(".box").css("background-color", "black");
+                startGame();
+                return;
+            }
+        }
+
+        function startGame() {
+            $(".box").click(function () {
+                var num = Number($(this).text());
+                var id = $(this).attr("id");
+                if (firstVal === -1 && num === 1) {
+                    firstVal = num;
+                    $("#" + id).empty();
+                    $("#" + id).css("background-color", "white");
+                }
+                else if (firstVal + 1 === num && num !== 8) {
+                    firstVal = num;
+                    $("#" + id).empty();
+                    $("#" + id).css("background-color", "white");
+                }
+                else if (firstVal + 1 === num ) {
+                    firstVal = -1;
+                    $(".body").empty();
+                    Swal.fire(
+                        'Good job!',
+                        'You won!',
+                        'success'
+                    );
+                }
+                else {
+                    firstVal = -1;
+                    $(".body").empty();
+                    Swal.fire(
+                        'Losss!',
+                        'You non!',
+                        'warning'
+                    );
+                }
+            })
+
+        }
+
+        function createBoxContent() {
+            time = 0;
+            interval = setInterval(countTime, 1);
+            $('.body').empty();
+            let arr = [];
+            let x = 0;
+            for (let i = 1; i <= 8; i++) {
+                arr[x++] = i;
+                arr[x++] = 0;
+            }
+
+            for (let i = 0; i < 16; i++) {
+                var val = getRandomItem(arr);
+                var text = "";
+                if (val === 0) {
+                    text = "<div id='" + i
+                        + "' class='col-md-3 h-25 text-center pt-4 border border-secondary'>" + " " + "</div>";
+                } else {
+                    text = "<div id='" + i
+                        + "' class='col-md-3 h-25 text-center pt-4 border border-secondary box'>" + val + "</div>";
+                }
+                $('.body').append(text);
+            }
+        }
+
+        function getRandomItem(arr) {
+
+            const randomIndex = Math.floor(Math.random() * arr.length);
+
+            const item = arr[randomIndex];
+            var index = arr.indexOf(item);
+            arr.splice(index, 1);
+
+            return item;
+
+        }
+    </script>
+</body>
+
+</html>
