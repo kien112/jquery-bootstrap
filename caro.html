@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+<style>
+    .box{
+        border: 1px solid black;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+<body>
+    <button class="btn btn-primary m-3" id="btnStart">Start</button>
+    <div style=" margin: 10px 170px;" class="body">
+
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js">
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            startGame();
+            $("#btnStart").click(function () {
+                startGame();
+            })
+        })
+        var row = 25;
+        var col = 35;
+        var isX = true;
+        var isEnd = false;
+        var matrix = new Array(row).fill("0").map(() => new Array(col).fill("0"));
+        function startGame() {
+            $(".body").empty();
+            matrix = new Array(row).fill("0").map(() => new Array(col).fill("0"));
+            isEnd = false;
+            isX = true;
+            for (let i = 0; i < row; i++) {
+                for (let j = 0; j < col; j++){
+                    var text = "";
+                    text = "<input id='"+i+" "+j+"' class='box' type='text' readonly/>";
+                    if(j == col-1)
+                        text += "<br/>";
+                    $('.body').append(text);
+                }
+            }
+
+            $(".box").click(function () {
+                var text = $(this).val();
+                if(text == "" && !isEnd){
+                    var rc = $(this).attr("id");
+                    var i = Number(rc.split(" ")[0]);
+                    var j = Number(rc.split(" ")[1]);
+                    var s = isX ? "X" : "O";
+                    matrix[i][j] = s;
+                    $(this).val(s);
+                    isX = !isX;
+                    checkWin(s, i, j);
+                }
+            })
+        }
+
+        function checkWin(s, i, j){
+            //check row 
+            var start = j - 5 < 0 ? 0 : j - 5;
+            var end = j + 5 > col ? col : j + 5;
+            var subarr = matrix[i].slice(start, end);
+            var x = s+","+s+","+s+","+s+","+s;
+
+            showMess(subarr.toString().includes(x), s);
+
+            //check column 
+            start = i - 5 < 0 ? 0 : i - 5;
+            end = i + 5 > row ? row : i + 5;
+            subarr = new Array();
+            var index = 0;
+            for(let k = start; k < end; k++){
+                subarr[index++] = matrix[k][j];
+            }
+            showMess(subarr.toString().includes(x), s);
+
+            //check diagonal line left to right
+            subarr = new Array();
+            
+            index = 0;
+            var min = Math.min(i,j);
+            min = Math.min(min, 5);
+
+            var startX = Math.max(0, i-min);
+            var startY = Math.max(0, j-min);
+            var endX, endY;
+            min = i > j ? row-i : col-j;
+            min--;
+            min = Math.min(min, 5);
+            endX = Math.min(i+min, row-1);
+            endY = Math.min(j+min, col-1);
+
+            while(true){
+                if(startX > endX && startY > endY){
+                    break;
+                }
+                subarr[index++] = matrix[endX--][endY--];
+            }
+            showMess(subarr.toString().includes(x), s);
+            
+            
+            //check diagonal line right to left
+            startX = i;
+            startY = j;
+            index = 0;
+            subarr = new Array();
+            var w = 0;
+            //go down
+            while(startX < row-1 && startY > 0 && w < 5){
+                startX++; 
+                startY--;
+                w++;
+            }
+            
+            endX = i;
+            endY = j;
+            w = 0;
+            //go up
+            while(endX > 0 && endY < col-1 && w < 5){
+                endX--;
+                endY++;
+                w++;
+            }
+            
+            while(true){
+                if(startX < endX && startY > endY){
+                    break;
+                }
+                subarr[index++] = matrix[startX--][startY++];
+            }
+            showMess(subarr.toString().includes(x), s);
+        }
+
+        function showMess(isWin, s){
+            if(isWin){
+                isEnd = true;
+                Swal.fire(
+                    'Good job!',
+                    s+' won!',
+                    'success'
+                );
+            }
+        }
+    </script>
+</body>
+</html>

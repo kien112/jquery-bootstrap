@@ -26,6 +26,7 @@
         var isX = true;
         var arr = [];
         var index = 0;
+        var isEnd = false;
         $(document).ready(() =>{
             $("#btnStart").click( () => {
                 startGame();
@@ -34,6 +35,7 @@
 
         function startGame(){
             $('.body').empty();
+            isEnd = false;
             index = 0;
             arr = [];
             for (let i = 1; i <= 9; i++) {
@@ -44,7 +46,7 @@
                 $('.body').append(text);
             }
             $(".box").click(function() {
-                if($(this).text() == 0){
+                if($(this).text() == 0 && !isEnd){
                     var i = $(this).attr("id");
                     var t = isX ? "X" : "O";
                     $(this).text(t);
@@ -54,6 +56,7 @@
                     var winner = checkWin();
                     if(winner != " "){
                         $("#turn").text(winner+" won!");
+                        isEnd = true;
                         Swal.fire(
                             'Good job!',
                             winner + ' won!',
